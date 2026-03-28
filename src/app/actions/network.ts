@@ -20,10 +20,15 @@ export async function getDefaultTargets() {
 // --- 2. EGRESS IP VERIFICATION (NAT CHECK) ---
 export async function checkEgressIp() {
   try {
-    // httpbin or ipify are great for bouncing back the requesting IP
-    const response = await fetch('https://api64.ipify.org?format=json')
-    const data = await response.json()
-    return { success: true, ip: data.ip }
+    // Ultra-reliable plain text endpoints
+    // Alternative: 'https://icanhazip.com'
+    const response = await fetch('https://checkip.amazonaws.com')
+    
+    // Parse as text instead of JSON
+    const textData = await response.text()
+    
+    // .trim() is crucial here to remove the trailing newline (\n)
+    return { success: true, ip: textData.trim() } 
   } catch (e: any) {
     return { success: false, ip: 'Unknown', error: e.message }
   }
