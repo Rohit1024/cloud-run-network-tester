@@ -9,7 +9,8 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Server, Globe, Lock, Loader2, Info, FileCode2 } from 'lucide-react'
+// Added RefreshCw here
+import { Server, Globe, Lock, Loader2, Info, FileCode2, RefreshCw } from 'lucide-react'
 
 import {
   Tooltip,
@@ -70,9 +71,34 @@ export default function NetworkDebuggerClient({ defaultTargets }: { defaultTarge
               </Tooltip>
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Current Egress IP</span>
             </div>
-            <div className="text-xs font-mono font-bold bg-background px-2.5 py-1 rounded border shadow-sm">
-              {egressIpQuery.isPending ? <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" /> :
-                egressIpQuery.data?.success ? egressIpQuery.data.ip : 'Detection Failed'}
+            
+            {/* UPDATED: Egress IP Display & Refresh Button */}
+            <div className="flex items-center gap-2">
+              <div className="text-xs font-mono font-bold bg-background px-2.5 py-1.5 rounded border shadow-sm flex items-center gap-2 min-w-[120px] justify-center">
+                {egressIpQuery.isFetching ? (
+                  <><Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" /> <span className="text-muted-foreground font-sans font-normal">Detecting...</span></>
+                ) : egressIpQuery.data?.success ? (
+                  <span className="text-green-600 dark:text-green-400">{egressIpQuery.data.ip}</span>
+                ) : (
+                  <span className="text-red-500 dark:text-red-400 font-sans font-normal">Detection Failed</span>
+                )}
+              </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="h-7 w-7" 
+                    onClick={() => egressIpQuery.refetch()}
+                    disabled={egressIpQuery.isFetching}
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${egressIpQuery.isFetching ? 'animate-spin text-muted-foreground' : ''}`} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs">Refresh IP Detection</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
 
